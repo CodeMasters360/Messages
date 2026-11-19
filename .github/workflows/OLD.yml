@@ -1,0 +1,72 @@
+name: Build and Release OLD Commit
+
+on:
+  workflow_dispatch: # Allows manual trigger from the Actions tab
+  push:
+    branches: [ "master", "main" ]
+
+permissions:
+  contents: write # Required to create tags and releases
+
+jobs:
+  build-and-publish:
+    name: Build APK and Create Release
+    runs-on: ubuntu-latest
+
+    env:
+      TARGET_REPO: "FossifyOrg/Messages"
+      COMMIT_SHA: "f6c0b82df66ae85fc760269640232a4c761d1f4f"
+      SHORT_SHA: "f6c0b82"
+
+    steps:
+      # Step 1: Checkout the exact commit directly from FossifyOrg/Messages
+      - name: Checkout Target Commit
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.TARGET_REPO }}
+          ref: ${{ env.COMMIT_SHA }}
+
+      # Step 2: Set up Java 17
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      # Step 3: Set up Gradle 8.9 with caching
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      # Step 4: Ensure execution permission on gradlew
+      - name: Make Gradlew Executable
+        run: chmod +x gradlew
+
+      # Step 5: Build APKs with managed JVM heap memory (prevents runner OOM)
+      - name: Build APKs with Gradle
+        run: |
+          ./gradlew assembleFossDebug assembleFossRelease --stacktrace \
+            -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=1024m"
+
+      # Step 6: Collect generated APKs into a clean directory
+      - name: Prepare Artifacts
+        run: |
+          mkdir -p output_apks
+          find app/build/outputs/apk/ -type f -name "*.apk" -exec cp {} output_apks/ \;
+
+      # Step 7: Force create a GitHub Release and attach APKs
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "v-${{ env.SHORT_SHA }}"
+          name: "Release ${{ env.SHORT_SHA }}"
+          body: |
+            Automated build from specific commit.
+            - **Repository:** https://github.com/${{ env.TARGET_REPO }}
+            - **Commit SHA:** `${{ env.COMMIT_SHA }}`
+          draft: false
+          prerelease: false
+          files: output_apks/*.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
