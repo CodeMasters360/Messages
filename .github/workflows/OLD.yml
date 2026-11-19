@@ -42,6 +42,19 @@ jobs:
       # Step 4: Ensure execution permission on gradlew
       - name: Make Gradlew Executable
         run: chmod +x gradlew
+        
+      # Step 5: FIX dead dependency (rtl-viewpager) by excluding it and suppressing ProGuard warnings
+      - name: Patch Dead Duolingo Dependency
+        run: |
+          mkdir -p ~/.gradle
+          cat << 'EOF' > ~/.gradle/init.gradle
+          allprojects {
+              configurations.all {
+                  exclude group: 'com.github.duolingo', module: 'rtl-viewpager'
+              }
+          }
+          EOF
+          echo "-dontwarn com.duolingo.open.rtlviewpager.**" >> app/proguard-rules.pro
 
       # Step 5: Build APKs with managed JVM heap memory (prevents runner OOM)
       - name: Build APKs with Gradle
