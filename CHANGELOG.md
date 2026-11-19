@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Added a Spam folder: messages detected as spam (blocked numbers, blocked sender names, blocked keywords, unknown senders) are now kept there instead of being deleted, without any notification
+
+### Fixed
+- Fixed alphanumeric sender IDs (e.g. "Google") in the blocked numbers list being matched case-sensitively
 
 ## [1.10.2] - 2026-10-21
 ### Changed

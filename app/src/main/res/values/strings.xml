@@ -73,6 +73,19 @@
     <string name="restore_all_messages">Restore all messages</string>
     <string name="empty_recycle_bin_messages_confirmation">Are you sure you want to empty the Recycle Bin? The messages will be permanently lost.</string>
     <string name="skip_the_recycle_bin_messages">Skip the Recycle Bin, delete messages directly</string>
+    <!-- Spam folder -->
+    <string name="spam_folder">Spam</string>
+    <string name="show_spam_folder">Show spam folder</string>
+    <string name="no_spam_messages">The spam folder is empty. Messages from blocked numbers or sender names, blocked keywords and unknown senders (when blocked) are kept here without any notification, and are deleted automatically after 30 days.</string>
+    <string name="not_spam">Not spam</string>
+    <string name="empty_spam">Empty the spam folder</string>
+    <string name="empty_spam_confirmation">Are you sure you want to permanently delete all messages in the spam folder?</string>
+    <string name="spam_mms_placeholder">Multimedia message (blocked before it was downloaded)</string>
+    <string name="spam_unknown_sender">Unknown sender</string>
+    <string name="spam_reason_blocked_number">Blocked sender</string>
+    <string name="spam_reason_blocked_keyword">Blocked keyword</string>
+    <string name="spam_reason_unknown_sender">Unknown sender blocked</string>
+    <string name="messages_moved_out_of_spam">Moved out of spam</string>
     <!-- Confirmation dialog -->
     <string name="delete_whole_conversation_confirmation">Are you sure you want to delete all messages of this conversation?</string>
     <string name="archive_confirmation">Are you sure you want to archive %s?</string>

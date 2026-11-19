@@ -4,12 +4,8 @@ import android.content.Context
 import android.net.Uri
 import com.bumptech.glide.Glide
 import com.klinker.android.send_message.MmsReceivedReceiver
-import org.fossify.commons.extensions.baseConfig
 import org.fossify.commons.extensions.getMyContactsCursor
-import org.fossify.commons.extensions.isNumberBlocked
 import org.fossify.commons.extensions.showErrorToast
-import org.fossify.commons.helpers.ContactLookupResult
-import org.fossify.commons.helpers.SimpleContactsHelper
 import org.fossify.commons.helpers.ensureBackgroundThread
 import org.fossify.messages.R
 import org.fossify.messages.extensions.getConversations
@@ -17,29 +13,58 @@ import org.fossify.messages.extensions.getMMS
 import org.fossify.messages.extensions.getLatestMMS
 import org.fossify.messages.extensions.getNameFromAddress
 import org.fossify.messages.extensions.insertOrUpdateConversation
+import org.fossify.messages.extensions.saveSpamMessage
 import org.fossify.messages.extensions.shouldUnarchive
 import org.fossify.messages.extensions.showReceivedMessageNotification
 import org.fossify.messages.extensions.updateConversationArchivedStatus
+import org.fossify.messages.helpers.ReceiverUtils
 import org.fossify.messages.helpers.ReceiverUtils.isMessageFilteredOut
+import org.fossify.messages.helpers.SPAM_REASON_BLOCKED_KEYWORD
 import org.fossify.messages.helpers.refreshConversations
 import org.fossify.messages.helpers.refreshMessages
 import org.fossify.messages.models.Message
 
 class MmsReceiver : MmsReceivedReceiver() {
 
-    override fun isAddressBlocked(context: Context, address: String): Boolean {
-        if (context.isNumberBlocked(address)) return true
-        if (context.baseConfig.blockUnknownNumbers) {
-            val privateCursor = context.getMyContactsCursor(favoritesOnly = false, withPhoneNumbersOnly = true)
-            val result = SimpleContactsHelper(context).existsSync(address, privateCursor)
-            return result == ContactLookupResult.NotFound
+    // The library calls isAddressBlocked() and then isContentBlocked() on the same thread,
+    // so the sender found in the first call can be reused when the content gets blocked.
+    private val lastCheckedAddress = ThreadLocal<String?>()
+
+    override fun isAddressBlocked(context: Context, address: String?): Boolean {
+        lastCheckedAddress.set(address)
+        if (address.isNullOrBlank()) return false
+
+        val spamReason = ReceiverUtils.getAddressSpamReason(context, address)
+        if (spamReason != null) {
+            // The MMS is not downloaded/stored; keep a placeholder in the spam folder (no notification).
+            context.saveSpamMessage(
+                address = address,
+                subject = "",
+                body = "",
+                date = System.currentTimeMillis(),
+                subscriptionId = -1,
+                reason = spamReason,
+                isMms = true
+            )
+            return true
         }
 
         return false
     }
 
-    override fun isContentBlocked(context: Context, content: String): Boolean {
-        return isMessageFilteredOut(context, content)
+    override fun isContentBlocked(context: Context, content: String?): Boolean {
+        if (content.isNullOrEmpty() || !isMessageFilteredOut(context, content)) return false
+
+        context.saveSpamMessage(
+            address = lastCheckedAddress.get().orEmpty(),
+            subject = "",
+            body = content,
+            date = System.currentTimeMillis(),
+            subscriptionId = -1,
+            reason = SPAM_REASON_BLOCKED_KEYWORD,
+            isMms = true
+        )
+        return true
     }
 
     override fun onMessageReceived(context: Context, messageUri: Uri?) {

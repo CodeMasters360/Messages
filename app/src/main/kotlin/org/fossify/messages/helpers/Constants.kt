@@ -120,3 +120,9 @@ fun generateStableId(type: Int, key: Long): Long {
     require(type in 0 until (1 shl THREAD_TYPE_BITS))
     return (type.toLong() shl THREAD_TYPE_SHIFT) or (key and THREAD_KEY_MASK)
 }
+
+// spam folder
+const val SPAM_REASON_BLOCKED_NUMBER = 0
+const val SPAM_REASON_BLOCKED_KEYWORD = 1
+const val SPAM_REASON_UNKNOWN_SENDER = 2
+const val SPAM_RETENTION_MS = 30L * 24L * 60L * 60L * 1000L

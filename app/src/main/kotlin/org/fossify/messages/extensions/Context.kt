@@ -33,7 +33,6 @@ import org.fossify.commons.extensions.getLongValue
 import org.fossify.commons.extensions.getMyContactsCursor
 import org.fossify.commons.extensions.getStringValue
 import org.fossify.commons.extensions.hasPermission
-import org.fossify.commons.extensions.isNumberBlocked
 import org.fossify.commons.extensions.normalizeString
 import org.fossify.commons.extensions.notificationManager
 import org.fossify.commons.extensions.queryCursor
@@ -140,7 +139,7 @@ fun Context.getMessages(
     var messages = ArrayList<Message>()
     queryCursor(uri, projection, selection, selectionArgs, sortOrder, showErrors = true) { cursor ->
         val senderNumber = cursor.getStringValue(Sms.ADDRESS) ?: return@queryCursor
-        val isNumberBlocked = blockStatus.getOrPut(senderNumber) { isNumberBlocked(senderNumber, blockedNumbers) }
+        val isNumberBlocked = blockStatus.getOrPut(senderNumber) { isSenderBlocked(senderNumber, blockedNumbers) }
         if (isNumberBlocked) {
             return@queryCursor
         }
@@ -410,7 +409,7 @@ fun Context.getConversations(
                 rawIds.split(" ").filter { it.areDigitsOnly() }.map { it.toInt() }.toMutableList()
             val phoneNumbers = getThreadPhoneNumbers(recipientIds)
             if (phoneNumbers.isEmpty() || phoneNumbers.any {
-                    isNumberBlocked(
+                    isSenderBlocked(
                         it,
                         blockedNumbers
                     )
@@ -750,7 +749,7 @@ fun Context.getSuggestedContacts(
         val namePhoto = getNameAndPhotoFromPhoneNumber(senderNumber)
         var senderName = namePhoto.name
         var photoUri = namePhoto.photoUri ?: ""
-        if (isNumberBlocked(senderNumber, blockedNumbers)) {
+        if (isSenderBlocked(senderNumber, blockedNumbers)) {
             return@queryCursor
         } else if (namePhoto.name == senderNumber) {
             if (privateContacts.isNotEmpty()) {
