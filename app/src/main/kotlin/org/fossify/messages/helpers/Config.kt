@@ -3,8 +3,6 @@ package org.fossify.messages.helpers
 import android.content.Context
 import org.fossify.commons.helpers.BaseConfig
 import org.fossify.messages.extensions.getDefaultKeyboardHeight
-import org.fossify.messages.filter.FilterRule
-import org.fossify.messages.filter.FilterRuleStorage
 import org.fossify.messages.models.Conversation
 
 class Config(context: Context) : BaseConfig(context) {
@@ -91,22 +89,6 @@ class Config(context: Context) : BaseConfig(context) {
 
     fun removeBlockedKeyword(keyword: String) {
         blockedKeywords = blockedKeywords.minus(keyword)
-    }
-
-    /** Advanced filter rules (sender patterns, AND/OR words, regex, allow rules). */
-    var filterRules: List<FilterRule>
-        get() = FilterRuleStorage.fromJson(prefs.getString(FILTER_RULES, "[]") ?: "[]")
-        set(rules) = prefs.edit().putString(FILTER_RULES, FilterRuleStorage.toJson(rules)).apply()
-
-    fun upsertFilterRule(rule: FilterRule) {
-        val list = filterRules.toMutableList()
-        val index = list.indexOfFirst { it.id == rule.id }
-        if (index >= 0) list[index] = rule else list.add(rule)
-        filterRules = list
-    }
-
-    fun removeFilterRule(id: String) {
-        filterRules = filterRules.filterNot { it.id == id }
     }
 
     var exportSms: Boolean

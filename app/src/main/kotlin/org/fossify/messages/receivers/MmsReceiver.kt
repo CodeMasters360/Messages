@@ -20,7 +20,6 @@ import org.fossify.messages.extensions.insertOrUpdateConversation
 import org.fossify.messages.extensions.shouldUnarchive
 import org.fossify.messages.extensions.showReceivedMessageNotification
 import org.fossify.messages.extensions.updateConversationArchivedStatus
-import org.fossify.messages.helpers.ReceiverUtils.evaluateFilterRules
 import org.fossify.messages.helpers.ReceiverUtils.isMessageFilteredOut
 import org.fossify.messages.helpers.refreshConversations
 import org.fossify.messages.helpers.refreshMessages
@@ -28,21 +27,7 @@ import org.fossify.messages.models.Message
 
 class MmsReceiver : MmsReceivedReceiver() {
 
-    // The library asks about the sender and about the text in two separate calls,
-    // so remember what we know to be able to evaluate rules that use both.
-    private var knownAddress: String? = null
-    private var knownContent: String? = null
-    private var allowedByRule = false
-
     override fun isAddressBlocked(context: Context, address: String): Boolean {
-        knownAddress = address
-        val filter = evaluateFilterRules(context, address, knownContent)
-        if (filter.isBlocked) return true
-        if (filter.isAllowed) {
-            allowedByRule = true
-            return false
-        }
-
         if (context.isNumberBlocked(address)) return true
         if (context.baseConfig.blockUnknownNumbers) {
             val privateCursor = context.getMyContactsCursor(favoritesOnly = false, withPhoneNumbersOnly = true)
@@ -54,11 +39,6 @@ class MmsReceiver : MmsReceivedReceiver() {
     }
 
     override fun isContentBlocked(context: Context, content: String): Boolean {
-        knownContent = content
-        val filter = evaluateFilterRules(context, knownAddress, content)
-        if (filter.isBlocked) return true
-        if (filter.isAllowed || allowedByRule) return false
-
         return isMessageFilteredOut(context, content)
     }
 

@@ -183,54 +183,6 @@
     <string name="faq_4_text">You need to enable \"Send group messages as MMS\" in the app settings. This will ensure that group messages are sent as proper MMS, allowing all participants to see each other\'s replies.</string>
     <string name="play">Play</string>
     <string name="pause">Pause</string>
-    <!-- Filter rules -->
-    <string name="manage_filter_rules">Manage filter rules</string>
-    <string name="add_filter_rule">Add filter rule</string>
-    <string name="edit_filter_rule">Edit filter rule</string>
-    <string name="no_filter_rules">You have no filter rules. Rules can block messages by sender (number prefix or sender name), by words (any or all of them) or by a regular expression. Allow rules always win over block rules.</string>
-    <string name="test_filter_rules">Test rules</string>
-    <string name="filter_save">Save</string>
-    <string name="filter_delete">Delete</string>
-    <string name="filter_delete_confirm">Delete this rule?</string>
-    <string name="filter_default_name">Rule %1$d</string>
-    <string name="filter_rule_name">Rule name (optional)</string>
-    <string name="filter_action">Action</string>
-    <string name="filter_action_block">Block</string>
-    <string name="filter_action_allow">Allow (never block)</string>
-    <string name="filter_sender_section">Sender condition</string>
-    <string name="filter_sender_help">Leave empty to ignore the sender. One pattern per line or separated by commas. * matches anything. Works for numbers (+1456*) and for sender names (google, *bank*), case-insensitive. Numbers usually arrive in international format, e.g. +98912*.</string>
-    <string name="filter_sender_mode">Sender match type</string>
-    <string name="filter_sender_mode_wildcard">Number / name pattern</string>
-    <string name="filter_sender_hint">Sender patterns</string>
-    <string name="filter_body_section">Message text condition</string>
-    <string name="filter_body_help">Leave empty to ignore the text. Words: one per line or separated by commas. Regular expression: one pattern per line (Java syntax, partial match, a dot also matches line breaks).</string>
-    <string name="filter_body_mode">Text match type</string>
-    <string name="filter_body_any">Contains ANY of the words (OR)</string>
-    <string name="filter_body_all">Contains ALL of the words (AND)</string>
-    <string name="filter_mode_regex">Regular expression</string>
-    <string name="filter_body_hint">Words or patterns</string>
-    <string name="filter_match_case">Match case</string>
-    <string name="filter_rule_enabled">Rule enabled</string>
-    <string name="filter_both_must_match">If both a sender and a text condition are set, both must match.</string>
-    <string name="filter_error_empty">Fill in a sender condition, a text condition, or both.</string>
-    <string name="filter_error_no_sender">Add at least one sender pattern.</string>
-    <string name="filter_error_no_words">Add at least one word.</string>
-    <string name="filter_error_sender_regex">Sender regex error: %1$s</string>
-    <string name="filter_error_body_regex">Text regex error: %1$s</string>
-    <string name="filter_test_sender_hint">Sender, e.g. +14561234567 or Google</string>
-    <string name="filter_test_text_hint">Message text</string>
-    <string name="filter_test_blocked">Blocked by rule \"%1$s\"</string>
-    <string name="filter_test_allowed">Allowed by rule \"%1$s\"</string>
-    <string name="filter_test_no_match">No rule matched - the message is allowed.</string>
-    <string name="blocked_messages">Blocked messages</string>
-    <string name="no_blocked_messages">No blocked messages. Messages stopped by your filter rules are kept here instead of the inbox.</string>
-    <string name="blocked_message_restore">Restore to inbox</string>
-    <string name="blocked_message_never_block">Never block this sender</string>
-    <string name="blocked_message_copy">Copy message text</string>
-    <string name="blocked_message_restored">Message restored to the inbox</string>
-    <string name="blocked_message_rule">Rule: %1$s</string>
-    <string name="blocked_delete_all">Delete all</string>
-    <string name="blocked_delete_all_confirm">Delete all blocked messages? This cannot be undone.</string>
     <!--
         Haven't found some strings? There's more at
         https://github.com/FossifyOrg/Commons/tree/master/commons/src/main/res

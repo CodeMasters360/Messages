@@ -103,8 +103,6 @@ class SettingsActivity : SimpleActivity() {
         setupLanguage()
         setupManageBlockedNumbers()
         setupManageBlockedKeywords()
-        setupManageFilterRules()
-        setupBlockedMessages()
         setupChangeDateTimeFormat()
         setupFontSize()
         setupShowCharacterCounter()
@@ -216,22 +214,6 @@ class SettingsActivity : SimpleActivity() {
 
         settingsManageBlockedKeywordsHolder.setOnClickListener {
             Intent(this@SettingsActivity, ManageBlockedKeywordsActivity::class.java).apply {
-                startActivity(this)
-            }
-        }
-    }
-
-    private fun setupManageFilterRules() = binding.apply {
-        settingsManageFilterRulesHolder.setOnClickListener {
-            Intent(this@SettingsActivity, ManageFilterRulesActivity::class.java).apply {
-                startActivity(this)
-            }
-        }
-    }
-
-    private fun setupBlockedMessages() = binding.apply {
-        settingsBlockedMessagesHolder.setOnClickListener {
-            Intent(this@SettingsActivity, BlockedMessagesActivity::class.java).apply {
                 startActivity(this)
             }
         }

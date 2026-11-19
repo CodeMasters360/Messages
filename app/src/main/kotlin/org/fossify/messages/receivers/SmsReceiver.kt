@@ -22,8 +22,6 @@ import org.fossify.messages.extensions.messagesDB
 import org.fossify.messages.extensions.shouldUnarchive
 import org.fossify.messages.extensions.showReceivedMessageNotification
 import org.fossify.messages.extensions.updateConversationArchivedStatus
-import org.fossify.messages.helpers.BlockedMessagesDb
-import org.fossify.messages.helpers.ReceiverUtils.evaluateFilterRules
 import org.fossify.messages.helpers.ReceiverUtils.isMessageFilteredOut
 import org.fossify.messages.helpers.refreshConversations
 import org.fossify.messages.helpers.refreshMessages
@@ -47,30 +45,13 @@ class SmsReceiver : BroadcastReceiver() {
                 val status = parts.last().status
                 val body = buildString { parts.forEach { append(it.messageBody.orEmpty()) } }
 
-                // advanced filter rules: an ALLOW rule skips every other block check
-                val filter = evaluateFilterRules(appContext, address, body)
-                if (filter.isBlocked) {
-                    // keep a copy in the "Blocked messages" folder; nothing reaches the inbox or notifications
-                    BlockedMessagesDb.get(appContext).insert(
-                        address = address,
-                        subject = subject,
-                        body = body,
-                        date = System.currentTimeMillis(),
-                        rule = filter.rule?.name.orEmpty(),
-                        subscriptionId = intent.getIntExtra("subscription", -1)
-                    )
-                    return@ensureBackgroundThread
-                }
-
-                if (!filter.isAllowed) {
-                    if (isMessageFilteredOut(appContext, body)) return@ensureBackgroundThread
-                    if (appContext.isNumberBlocked(address)) return@ensureBackgroundThread
-                    if (appContext.baseConfig.blockUnknownNumbers) {
-                        val privateCursor =
-                            appContext.getMyContactsCursor(favoritesOnly = false, withPhoneNumbersOnly = true)
-                        val result = SimpleContactsHelper(appContext).existsSync(address, privateCursor)
-                        if (result == ContactLookupResult.NotFound) return@ensureBackgroundThread
-                    }
+                if (isMessageFilteredOut(appContext, body)) return@ensureBackgroundThread
+                if (appContext.isNumberBlocked(address)) return@ensureBackgroundThread
+                if (appContext.baseConfig.blockUnknownNumbers) {
+                    val privateCursor =
+                        appContext.getMyContactsCursor(favoritesOnly = false, withPhoneNumbersOnly = true)
+                    val result = SimpleContactsHelper(appContext).existsSync(address, privateCursor)
+                    if (result == ContactLookupResult.NotFound) return@ensureBackgroundThread
                 }
 
                 val date = System.currentTimeMillis()
