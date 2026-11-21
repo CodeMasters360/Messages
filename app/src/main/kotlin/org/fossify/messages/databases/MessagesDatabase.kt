@@ -14,14 +14,13 @@ import org.fossify.messages.interfaces.ConversationsDao
 import org.fossify.messages.interfaces.DraftsDao
 import org.fossify.messages.interfaces.MessageAttachmentsDao
 import org.fossify.messages.interfaces.MessagesDao
-import org.fossify.messages.interfaces.SpamMessagesDao
 import org.fossify.messages.models.Attachment
 import org.fossify.messages.models.Conversation
 import org.fossify.messages.models.Draft
 import org.fossify.messages.models.Message
 import org.fossify.messages.models.MessageAttachment
 import org.fossify.messages.models.RecycleBinMessage
-import org.fossify.messages.models.SpamMessage
+import org.fossify.messages.models.SpamConversation
 
 @Database(
     entities = [
@@ -31,7 +30,7 @@ import org.fossify.messages.models.SpamMessage
         Message::class,
         RecycleBinMessage::class,
         Draft::class,
-        SpamMessage::class
+        SpamConversation::class
     ],
     version = 12
 )
@@ -47,8 +46,6 @@ abstract class MessagesDatabase : RoomDatabase() {
     abstract fun MessagesDao(): MessagesDao
 
     abstract fun DraftsDao(): DraftsDao
-
-    abstract fun SpamMessagesDao(): SpamMessagesDao
 
     companion object {
         private var db: MessagesDatabase? = null
@@ -185,18 +182,14 @@ abstract class MessagesDatabase : RoomDatabase() {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.apply {
                     execSQL(
-                        "CREATE TABLE IF NOT EXISTS `spam_messages` (" +
-                            "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                            "`address` TEXT NOT NULL, " +
-                            "`subject` TEXT NOT NULL, " +
-                            "`body` TEXT NOT NULL, " +
-                            "`date` INTEGER NOT NULL, " +
-                            "`subscription_id` INTEGER NOT NULL, " +
-                            "`reason` INTEGER NOT NULL, " +
-                            "`is_mms` INTEGER NOT NULL)"
+                        "CREATE TABLE IF NOT EXISTS `spam_conversations` " +
+                            "(`thread_id` INTEGER NOT NULL, `marked_ts` INTEGER NOT NULL, " +
+                            "PRIMARY KEY(`thread_id`))"
                     )
-                    execSQL("CREATE INDEX IF NOT EXISTS `index_spam_messages_date` ON `spam_messages` (`date`)")
-                    execSQL("CREATE INDEX IF NOT EXISTS `index_spam_messages_address` ON `spam_messages` (`address`)")
+                    execSQL(
+                        "CREATE UNIQUE INDEX IF NOT EXISTS `index_spam_conversations_thread_id` " +
+                            "ON `spam_conversations` (`thread_id`)"
+                    )
                 }
             }
         }
