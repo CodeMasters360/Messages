@@ -1,4 +1,4 @@
-name: Build APK and publish release
+name: Build APK and publish release new claude
 
 # Manual workflow: Actions tab -> "Build APK and publish release" -> Run workflow.
 # After a successful build it ALWAYS creates a GitHub Release in THIS repository
