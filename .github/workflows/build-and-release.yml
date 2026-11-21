@@ -118,6 +118,7 @@ jobs:
       # ---- Build ---------------------------------------------------------------------------
       - name: Build release APKs (foss + gplay)
         run: |
+            chmod +x ./gradlew
           ./gradlew --no-daemon --stacktrace \
             "-Dorg.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8" \
             "-Pkotlin.daemon.jvmargs=-Xmx2g" \
